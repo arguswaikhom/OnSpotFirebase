@@ -1,0 +1,8 @@
+export enum Status {
+    ORDERED = 'ORDERED',
+    ACCEPTED = 'ACCEPTED',
+    PREPARING = 'PREPARING',
+    ON_THE_WAY = 'ON_THE_WAY',
+    DELIVERED = 'DELIVERED',
+    CANCELED = 'CANCELED'
+}

@@ -3,40 +3,48 @@ import { DocumentSnapshot } from 'firebase-functions/lib/providers/firestore';
 export class User {
     displayName: string
     email: string
-    emailVerified: boolean
     phoneNumber: string
-    phoneNumberVerified: boolean
     profileImageUrl: string
     userId: string
-    onSpotAccount: boolean
-    onSpotBusinessAccount: boolean
-    onSpotDeliveryAccount: boolean
+    hasEmailVerified: boolean
+    hasPhoneNumberVerified: boolean
+    hasOnSpotAccount: boolean
+    hasOnSpotBusinessAccount: boolean
+    hasOnSpotDeliveryAccount: boolean
+    businessId: string
+    businessRefId: string
 
-    constructor(displayName: string, email: string, emailVerified: boolean, phoneNumber: string, phoneNumberVerified: boolean, profileImageUrl: string, userId: string, onSpotAccount: boolean, onSpotBusinessAccount: boolean, onSpotDeliveryAccount: boolean, ) {
+    constructor(displayName: string, email: string, emailVerified: boolean, phoneNumber: string, 
+        hasPhoneNumberVerified: boolean, profileImageUrl: string, userId: string, hasOnSpotAccount: boolean, 
+        hasOnSpotBusinessAccount: boolean, hasOnSpotDeliveryAccount: boolean, businessId: string, businessRefId: string) {
         this.displayName = displayName
         this.email = email
-        this.emailVerified = emailVerified
+        this.hasEmailVerified = emailVerified
         this.phoneNumber = phoneNumber
-        this.phoneNumberVerified = phoneNumberVerified
+        this.hasPhoneNumberVerified = hasPhoneNumberVerified
         this.profileImageUrl = profileImageUrl
         this.userId = userId
-        this.onSpotAccount = onSpotAccount
-        this.onSpotBusinessAccount = onSpotBusinessAccount
-        this.onSpotDeliveryAccount = onSpotDeliveryAccount
+        this.hasOnSpotAccount = hasOnSpotAccount
+        this.hasOnSpotBusinessAccount = hasOnSpotBusinessAccount
+        this.hasOnSpotDeliveryAccount = hasOnSpotDeliveryAccount
+        this.businessId = businessId
+        this.businessRefId = businessRefId
     }
 
     public static fromDoc(doc: DocumentSnapshot): User {
         return new User (
             doc.get('displayName'),
             doc.get('email'),
-            doc.get('emailVerified'),
+            doc.get('hasEmailVerified'),
             doc.get('phoneNumber'),
-            doc.get('phoneNumberVerified'),
+            doc.get('hasPhoneNumberVerified'),
             doc.get('profileImageUrl'),
             doc.get('userId'),
-            doc.get('onSpotAccount'),
-            doc.get('onSpotBusinessAccount'),
-            doc.get('onSpotDeliveryAccount')
+            doc.get('hasOnSpotAccount'),
+            doc.get('hasOnSpotBusinessAccount'),
+            doc.get('hasOnSpotDeliveryAccount'),
+            doc.get('businessId'),
+            doc.get('businessRefId')
         );
     }
 }
