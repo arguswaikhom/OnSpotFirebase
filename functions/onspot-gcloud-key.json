@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "crown-onspot",
+  "private_key_id": "0a28df72406a9e45555fac76beea82187eb15229",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDGSwCEqkMVhmTn\nroDC1qRMF1E3PWsTgTCXK97qsIGHK9lEAksq3qV8osvo1lFtOQAnmkKzQx7Hbhil\nKmTrVAPWOWm6z1Vl6JJDsW1iVMagcIJMXUlxe1fESR8OmExjevo1i4iUgpyT5i/H\njW2KmN+miSfWzb93yF4y1smcz1mmNH4+rVrNUffY0JRN+LalyV/OXtG12SGy8rom\nQXF0JROiTqPgSUayKbOQk6pnviG5tfPQ6bRgx5YGP82PetJWci8omKDk6nw51nzK\ncw3EqlyQCZMVw2bSJUxNyZJm8OLGgQj19aCUCoLCCTIUoDgnrppw0oHMG80eIY7y\nXLP4cbLjAgMBAAECggEABWH10qQYjBYI2S0oe6F99j7PypMVPANOwVvEglRmP7gV\n/r2dMr22ekqlBF4E+dUJRwnt85XH2RwI+TrMYIL4U7FdSF/mbozAo6vGT1wDxEkp\nkE8b9kOl30Mo36mMsUqeTiPKglWFUJJ4C4+wQInj0E560V7maqb6v6CK+oG6akOI\nSSrwWA3R0s1v0uzAvwm9aUzW2GXI1cvDmWhICLDJP0RA033UDUMIG1wiZpLs2PjI\n+wwP21rf5rvqF3JbYiPaRk57jjJeaI3Ax9avuhmGczH6btQsShK1mWrGrFYhegPH\nmC7YlFsJsAkgxv2xwWbxDZc6mppsS4IYCPaKkCq5+QKBgQDnniKJv9qAAAWQMIDT\n9H60LLuU/PZyDUC9CVlXt2OvF+GLH+zIha3F3C7X0e/3THVO0vo7OT35UCOPDFuf\n+fsUUTTNPesGB2RwgIACl8wb3QKOWyRkBgCLVoB+7vHlwKZFS7rdM6kmA8Jke/HY\n4kaxNWQxdvZzU95aMREgKr0eDQKBgQDbKsyBefHNPAwc9TylRuD7faBWlx88J7IT\nZJYoRn6hsOttsJT3wddlhJV+4HFuy2qrorIvascqOPFjAtdqH4+m+mSQ7aoKkfj6\npdXAFvV8UImXGqjsUD6z/yVgJt0y0ig9REjBegy+AoMf5AR2IzN3L5cnWE7PFFDM\nayjSTHDIrwKBgFEekEggWn1kBI7IfgY95jZiSFxY8FNnktniMVlIUHBdc8/PIZXl\nQ8Q9ZmaOD3ZUX+14dM1TMgJkb9/E2z4/RhGKk2yil/KnmiTQzISb9492q1OCVk91\nzrD+XciXFT97ZoB0koCwfDhlLqsUwdJNBadA5NNyL8SahhCeiLn0XgHtAoGATYO+\nntCNZ+Qj+J333BDMg8YzzkxWvMThY6CAxy/fm7piGgKJPXNuhjY1VZF2LRR+3sOF\nN+YRGOrY3QblP2B4QztuFCAqsuBb6fJ7PhwgqN4nO60vL51V//1ur6ovM8lGeBzN\nirhrB00GKWJQ/aOHkVDgqga+oNjzlskTwAVPInsCgYBUjSOre5RwO/ehx+hN1KCl\nPtl0nUZFSWOLUVjW5x3xbSG5+OrExfmcLKBKUA/zVoRQOXQu8y1KbUTq2Ok+Rbli\n92MKYtUhzd6bS+NYwz3//Ls2Tm6XY95aKpXv/pzJ+AYeB+v1fQeAr/ShfG+Eije7\nj3jCKmc8+BQMydUJJ3pZIQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "onspot@crown-onspot.iam.gserviceaccount.com",
+  "client_id": "107437724393102757588",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/onspot%40crown-onspot.iam.gserviceaccount.com"
+}

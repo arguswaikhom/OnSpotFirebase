@@ -3,14 +3,14 @@ import admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 import { User } from './model/User';
-import { Status } from './model/Status'
 import { DistanceUtil } from './model/DistanceUtil'
 import { TimeUtil } from './model/TimeUtil'
 import { Business } from './model/Business';
 import { ListData } from './model/MockData';
 import { Namespace } from './utils/Namespace';
-import { Notification } from './controller/notification';
+import { NotificationSender } from './controller/notificationController';
 
+// const storage = new Storage({keyFilename: "../onspot-gcloud-key.json"});
 const firestore = admin.firestore();
 const timestamp = admin.firestore.Timestamp
 
@@ -21,10 +21,13 @@ const DOC_BUSINESS_TYPE = 'business-type'
 const REF_USER: string = 'user'
 const REF_BUSINESS: string = 'business'
 const REF_CROWN_ONSPOT: string = 'crown-onspot'
-const REF_NOTIFICATION: string = 'notification'
 
-const FIELD_POSTAL_CODE: string = 'postalCode'
-
+exports.order = require('./functions/order')
+exports.product = require('./functions/product')
+exports.review = require('./functions/review')
+exports.explore = require('./functions/explore')
+exports.business = require('./functions/business')
+exports.business_partner = require('./functions/business-partner')
 
 export const onCreateUser = functions.auth.user().onCreate(async (user) => {
     if (user.email === null) {
@@ -32,24 +35,22 @@ export const onCreateUser = functions.auth.user().onCreate(async (user) => {
             return
         });
     } else {
-        await firestore.collection(REF_USER).doc(user.uid).set({
-            displayName: user.displayName,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            profileImageUrl: user.photoURL,
-            userId: user.uid,
-            hasEmailVerified: user.emailVerified,
-            hasPhoneNumberVerified: false,
-            hasOnSpotAccount: false,
-            hasOnSpotBusinessAccount: false,
-            hasOnSpotDeliveryAccount: false,
-        }).then(ref => {
-            console.log("user added: " + user.email)
-            return
-        }).catch(error => {
-            console.log(error)
-            return
-        })
+        try {
+            await firestore.collection(REF_USER).doc(user.uid).set({
+                displayName: user.displayName,
+                email: user.email,
+                phoneNumber: user.phoneNumber,
+                profileImageUrl: user.photoURL,
+                userId: user.uid,
+                hasEmailVerified: user.emailVerified,
+                hasPhoneNumberVerified: false,
+                hasOnSpotAccount: false,
+                hasOnSpotBusinessAccount: false,
+                hasOnSpotDeliveryAccount: false,
+            })
+        } catch (error) {
+            console.error(error)
+        }
     }
 });
 
@@ -292,54 +293,6 @@ export const updateBusiness = functions.https.onRequest(async (request, response
 });
 
 
-exports.onCreateOrder = functions.firestore.document('order/{orderId}').onCreate(async (snap, context) => {
-    console.log("onWrite item: " + JSON.stringify(snap.data()))
-
-    const businessRefId = snap.get('businessRefId')
-    const business = await firestore.collection(REF_BUSINESS).doc(businessRefId).get()
-
-    const customerId = snap.get('customerId')
-    const customer = await firestore.collection(REF_USER).doc(customerId).get()
-    const customerProfileImageUrl = customer.get('profileImageUrl')
-
-    const notification = { title: 'New Order', body: 'You have a new order from ' + snap.get('customerDisplayName'), icon: customerProfileImageUrl }
-    return Notification.toOSB(business, notification)
-});
-
-
-exports.onUpdateOrder = functions.firestore.document('order/{orderId}').onUpdate(async (change, context) => {
-    const oldStatus = change.before.get('status')
-    const newStatus = change.after.get('status')
-
-    let notiTitle
-    let notiBody
-
-    if (oldStatus === Status.ORDERED && newStatus === Status.ACCEPTED) {
-        notiTitle = 'Order Accepted'
-        notiBody = 'has been accepted.'
-    } else if (oldStatus === Status.ACCEPTED && newStatus === Status.PREPARING) {
-        notiTitle = 'Order Preparing'
-        notiBody = 'is preparing'
-    } else if (oldStatus === Status.PREPARING && newStatus === Status.ON_THE_WAY) {
-        notiTitle = 'Out for Delivery'
-        notiBody = "is on it's way"
-    } else if (oldStatus === Status.ON_THE_WAY && newStatus === Status.DELIVERED) {
-        notiTitle = 'Order Delivered'
-        notiBody = 'has been delivered'
-    } else if (oldStatus !== Status.CANCELED && newStatus === Status.CANCELED) {
-        notiTitle = 'Order Cancel'
-        notiBody = 'has been canceled.'
-    } else {
-        return
-    }
-
-    const customerId = change.before.get('customerId')
-    const customer = await firestore.collection(REF_USER).doc(customerId).get()
-    const notification = { tag: change.before.id, title: notiTitle, body: 'Your order from ' + change.before.get('businessDisplayName') + ' ' + notiBody }
-    return Notification.toOS(customer, notification)
-});
-
-
 /**
  * Get all the business relavent to the user's current location
  */
@@ -518,49 +471,7 @@ export const updateBusinessType = functions.https.onRequest(async (request, resp
 });
 
 
-export const addBusinessRequest = functions.https.onRequest(async (request, response) => {
-    try {
-        const business = JSON.parse(request.body.osb)
-        const user = JSON.parse(request.body.osd)
-        const type = Number(request.body.type)
-        const status = request.body.status
-
-        // If the OSD user and the business already have relationship, don't add a new request
-        const userOSD = await firestore.collection(Namespace.REF_USER).doc(user['userId']).get()
-        const OSDBusiness = userOSD.get('businessOSD')
-        if (OSDBusiness != null && OSDBusiness != undefined && OSDBusiness.length > 0) {
-            let conflict = false
-            OSDBusiness.forEach(obj => { if (obj['businessRefId'] == business['businessRefId']) conflict = true })
-            if (conflict) return response.status(200).send('Already availeble')
-        }
-
-        const promisses: any[] = []
-
-        // Add a new notification to the notification collection
-        const account = ['osb::' + business['businessRefId'], 'osd::' + user['userId']]
-        promisses.push(firestore.collection(REF_NOTIFICATION).add({ 'account': account, 'osb': business, 'osd': user, 'status': status, 'type': type }))
-
-        // Add business partner to the OSD user
-        const businessOSD = { 'businessRefId': business['businessRefId'], 'status': status }
-        promisses.push(firestore.collection(REF_USER).doc(user['userId']).update({ 'businessOSD': admin.firestore.FieldValue.arrayUnion(businessOSD) }))
-
-        // Notify the business
-        try {
-            const notification = { title: 'Delivery Partnership Request', body: user[Namespace.FIELD_DISPLAY_NAME] + ' wants to be your delivery partner', }
-            const osb = await firestore.collection(Namespace.REF_BUSINESS).doc(business[Namespace.FIELD_BUSINESS_REF_ID]).get()
-            await Notification.toOSB(osb, notification)
-        } catch (_) { }
-
-        await Promise.all(promisses)
-        return response.status(200).send('Request sent')
-    } catch (error) {
-        console.error(error)
-        return response.status(400).send(400)
-    }
-})
-
-
-export const acceptDPRequest = functions.https.onRequest(async (request, response) => {
+/* export const acceptDPRequest = functions.https.onRequest(async (request, response) => {
     try {
         const status = 'ACCEPTED'
         const userId = request.body.userId
@@ -605,7 +516,7 @@ export const acceptDPRequest = functions.https.onRequest(async (request, respons
         // Send notification to osd
         try {
             const notification = { title: 'Request Accepted', body: business.get(Namespace.FIELD_DISPLAY_NAME) + ' accepted your delivery partnership request', }
-            await Notification.toOSD(user, notification)
+            await NotificationSender.toOSD(user, notification)
         } catch (error) {
             console.error(error)
         }
@@ -646,7 +557,7 @@ export const rejectDPRequest = functions.https.onRequest(async (request, respons
         // Send notification to osd
         try {
             const notification = { title: 'Request Rejected', body: businessDisplayName + ' rejected your delivery partnership request', }
-            await Notification.toOSD(user, notification)
+            await NotificationSender.toOSD(user, notification)
         } catch (error) {
             console.error(error)
         }
@@ -657,4 +568,4 @@ export const rejectDPRequest = functions.https.onRequest(async (request, respons
         console.error(error)
         return response.status(400).send('Something went wrong!!')
     }
-})
+}) */

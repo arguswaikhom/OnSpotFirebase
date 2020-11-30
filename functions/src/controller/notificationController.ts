@@ -3,10 +3,10 @@ import { Namespace } from '../utils/Namespace';
 const firestore = admin.firestore();
 
 
-export class Notification {
+export class NotificationSender {
     public static async toOSD(osd, notification) {
         const tokens = osd.get(Namespace.FIELD_DEVICE_TOKEN_OSD) == null || undefined ? null : osd.get(Namespace.FIELD_DEVICE_TOKEN_OSD) as string[]
-        if (tokens == null) return
+        if (tokens == null || tokens.length == 0) return
 
         const payload = { notification: notification };
         const response = await admin.messaging().sendToDevice(tokens, payload);
@@ -30,12 +30,9 @@ export class Notification {
 
     public static async toOS(os, notification) {
         const tokens = os.get(Namespace.FIELD_DEVICE_TOKEN) == null || undefined ? null : os.get(Namespace.FIELD_DEVICE_TOKEN) as string[]
-        if (tokens == null) return
+        if (tokens == null || tokens.length == 0) return
 
-        const payload = {
-            notification: notification
-        };
-
+        const payload = { notification: notification };
         const response = await admin.messaging().sendToDevice(tokens, payload);
 
         const tokensToRemove: any[] = [];
@@ -57,12 +54,9 @@ export class Notification {
 
     public static async toOSB(osb, notification) {
         const tokens = osb.get(Namespace.FIELD_DEVICE_TOKEN) == null || undefined ? null : osb.get(Namespace.FIELD_DEVICE_TOKEN) as string[]
-        if (tokens == null) return
+        if (tokens == null || tokens.length == 0) return
 
-        const payload = {
-            notification: notification
-        };
-
+        const payload = { notification: notification };
         const response = await admin.messaging().sendToDevice(tokens, payload);
 
         const tokensToRemove: any[] = [];

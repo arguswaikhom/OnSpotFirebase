@@ -8,6 +8,8 @@ export class Namespace {
     public static get REF_CROWN_ONSPOT(): string { return 'crown-onspot' }
     public static get REF_NOTIFICATION(): string { return 'notification' }
 
+    public static get SREF_USER_PROFILE(): string { return 'user-profile' }
+
     public static get FIELD_USER_ID(): string { return 'userId' }
     public static get FIELD_DISPLAY_NAME(): string { return 'displayName' }
 
